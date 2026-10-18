@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	VERSION        = "1.0.0"
+	VERSION        = "1.0.1"
 	appDisplayName = "Kakao Guard"
 	repositoryURL  = "https://github.com/WRL-SPR/KakaoGuard"
 )
@@ -138,3 +138,4 @@ func openURL(url string) {
 		win.ShowError(appDisplayName, "Could not open the web browser:\n"+err.Error())
 	}
 }
+
