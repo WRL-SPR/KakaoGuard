@@ -41,14 +41,26 @@ jobs:
             $hash = Get-FileHash $_.FullName -Algorithm SHA256
             $hash.Hash.ToLower() + '  ' + $_.Name
           } | Set-Content dist/SHA256SUMS.txt
-      - name: Publish v1.0.1
+      - name: Save build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: KakaoGuard-1.0.2-Windows
+          path: dist/*
+      - name: Publish v1.0.2
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view v1.0.1 *> $null
+          gh release view v1.0.2 *> $null
           if ($LASTEXITCODE -eq 0) {
-            gh release upload v1.0.1 dist/KakaoGuard.exe dist/KakaoGuard_i386.exe dist/KakaoGuard_arm64.exe dist/SHA256SUMS.txt --clobber
+            gh release upload v1.0.2 dist/KakaoGuard.exe dist/KakaoGuard_i386.exe dist/KakaoGuard_arm64.exe dist/SHA256SUMS.txt --clobber
             exit $LASTEXITCODE
           }
-          gh release create v1.0.1 dist/KakaoGuard.exe dist/KakaoGuard_i386.exe dist/KakaoGuard_arm64.exe dist/SHA256SUMS.txt --target "${{ github.sha }}" --title "Kakao Guard 1.0.1" --notes "Fix Access is denied when enabling or disabling startup. The startup registry handle now requests both query and write permissions. Existing Go tests pass before building Windows amd64, 386, and arm64 binaries."
+          $publishOutput = gh release create v1.0.2 dist/KakaoGuard.exe dist/KakaoGuard_i386.exe dist/KakaoGuard_arm64.exe dist/SHA256SUMS.txt --target "${{ github.sha }}" --title "Kakao Guard 1.0.2" --notes "Fix startup registration permissions. Add Korean tray menus, KakaoTalk launcher, Windows startup settings, application folder shortcut, and usage information. Refresh startup state when opening the menu. Include icons and version metadata in all Windows binaries." 2>&1
+          $publishCode = $LASTEXITCODE
+          $publishOutput | ForEach-Object { Write-Output $_ }
+          if ($publishCode -ne 0) {
+            $detail = ($publishOutput | Out-String).Replace("`r", " ").Replace("`n", " ")
+            Write-Output "::error::$detail"
+            exit $publishCode
+          }
