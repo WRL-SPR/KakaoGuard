@@ -1,0 +1,49 @@
+name: Release Kakao Guard
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/release.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kakaoguard-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Test
+        run: go test ./...
+      - name: Generate Windows resources
+        run: |
+          go install github.com/tc-hib/go-winres@v0.3.3
+          go-winres make --arch amd64,386,arm64
+      - name: Build release executables
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          foreach ($target in @(@{Arch='amd64'; Name='KakaoGuard.exe'}, @{Arch='386'; Name='KakaoGuard_i386.exe'}, @{Arch='arm64'; Name='KakaoGuard_arm64.exe'})) {
+            $env:GOARCH = $target.Arch
+            go build -trimpath -o ("dist/" + $target.Name) -ldflags "-H windowsgui" ./cmd
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          Get-ChildItem dist/*.exe | ForEach-Object {
+            $hash = Get-FileHash $_.FullName -Algorithm SHA256
+            $hash.Hash.ToLower() + '  ' + $_.Name
+          } | Set-Content dist/SHA256SUMS.txt
+      - name: Publish v1.0.1
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v1.0.1 dist/KakaoGuard.exe dist/KakaoGuard_i386.exe dist/KakaoGuard_arm64.exe dist/SHA256SUMS.txt --target "${{ github.sha }}" --title "Kakao Guard 1.0.1" --notes "Fix Access is denied when enabling or disabling startup. The startup registry handle now requests both query and write permissions. Existing Go tests pass before building Windows amd64, 386, and arm64 binaries."
