@@ -50,7 +50,7 @@ func SetStartupEnabled(enable bool) error {
 	k, _, err := registry.CreateKey(
 		registry.CURRENT_USER,
 		startupKey,
-		registry.SET_VALUE,
+		registry.QUERY_VALUE|registry.SET_VALUE,
 	)
 	if err != nil {
 		return fmt.Errorf("open startup registry key: %w", err)
@@ -356,3 +356,4 @@ func managedKakaoCommand() (string, error) {
 	}
 	return command, nil
 }
+
