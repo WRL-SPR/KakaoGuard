@@ -27,7 +27,7 @@ jobs:
       - name: Generate Windows resources
         run: |
           go install github.com/tc-hib/go-winres@v0.3.3
-          go-winres make --arch amd64,386,arm64
+          go-winres make --arch amd64,386,arm64 --out cmd/rsrc
       - name: Build release executables
         shell: pwsh
         run: |
@@ -46,4 +46,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          gh release view v1.0.1 *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload v1.0.1 dist/KakaoGuard.exe dist/KakaoGuard_i386.exe dist/KakaoGuard_arm64.exe dist/SHA256SUMS.txt --clobber
+            exit $LASTEXITCODE
+          }
           gh release create v1.0.1 dist/KakaoGuard.exe dist/KakaoGuard_i386.exe dist/KakaoGuard_arm64.exe dist/SHA256SUMS.txt --target "${{ github.sha }}" --title "Kakao Guard 1.0.1" --notes "Fix Access is denied when enabling or disabling startup. The startup registry handle now requests both query and write permissions. Existing Go tests pass before building Windows amd64, 386, and arm64 binaries."
