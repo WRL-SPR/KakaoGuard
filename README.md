@@ -26,5 +26,6 @@ GUI binary false positives.
 
 ## Version
 
-Kakao Guard `1.0.1`
+Kakao Guard `1.0.2`
+
 
