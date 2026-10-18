@@ -12,7 +12,7 @@
       "0409": {
         "identity": {
           "name": "KakaoGuard",
-          "version": "1.0.0.0"
+          "version": "1.0.1.0"
         },
         "description": "KakaoTalk advertisement guard",
         "minimum-os": "win7",
@@ -36,22 +36,22 @@
     "#1": {
       "0000": {
         "fixed": {
-          "file_version": "1.0.0.0",
-          "product_version": "1.0.0.0"
+          "file_version": "1.0.1.0",
+          "product_version": "1.0.1.0"
         },
         "info": {
           "0409": {
             "Comments": "Open-source KakaoTalk advertisement window blocker",
             "CompanyName": "Kakao Guard Community Fork",
             "FileDescription": "Kakao Guard - KakaoTalk advertisement guard",
-            "FileVersion": "1.0.0.0",
+            "FileVersion": "1.0.1.0",
             "InternalName": "KakaoGuard",
             "LegalCopyright": "Unofficial community fork",
             "LegalTrademarks": "",
             "OriginalFilename": "KakaoGuard.exe",
             "PrivateBuild": "",
             "ProductName": "Kakao Guard",
-            "ProductVersion": "1.0.0",
+            "ProductVersion": "1.0.1",
             "SpecialBuild": ""
           }
         }
@@ -59,3 +59,4 @@
     }
   }
 }
+
